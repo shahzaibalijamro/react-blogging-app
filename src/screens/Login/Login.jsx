@@ -13,6 +13,12 @@ const Login = () => {
       email: emailRef.current.value,
       password: passwordRef.current.value
     })
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => {
+      alert(err)
+    })
     navigate('/dashboard')
   }
   return (

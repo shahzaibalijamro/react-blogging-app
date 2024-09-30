@@ -1,14 +1,24 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './dashboard.css'
 import Greeting from '../../components/Greeting'
-import { auth, db, sendData } from '../../config/firebase/firebasemethods';
+import { auth, db, getData, sendData } from '../../config/firebase/firebasemethods';
 import { useDispatch, useSelector } from 'react-redux';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { addUser } from '../../config/redux/reducers/userSlice';
 const Dashboard = () => {
-  const dispatch = useDispatch();
+  const [myBlogs, setMyBlogs] = useState([]);
   const selector = useSelector(state => state.user.user);
+  const blogTitle = useRef();
+  const blogDescription = useRef();
+  const dispatch = useDispatch();
+
+  const showSnackbar = () => {
+    var snackbar = document.getElementById("snackbar");
+    snackbar.className = "show";
+    setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
+}
+
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -23,14 +33,18 @@ const Dashboard = () => {
             user: userData[0]
           }
         ))
+        getData("blogs", user.uid)
+          .then(arr => {
+            setMyBlogs(arr)
+          })
+          .catch(err => {
+            console.log(err);
+          })
       } else {
         null
       }
     });
   }, [])
-  const blogTitle = useRef();
-  const blogDescription = useRef();
-  console.log(selector);
   const pushDataToFirestore = (event) => {
     event.preventDefault();
     const current = new Date();
@@ -59,14 +73,24 @@ const Dashboard = () => {
         pfp: selector.pfp,
         name: selector.name,
         email: selector.email
-      }, "Blogs"
+      }, "blogs"
     )
       .then((res) => {
         console.log(res);
       })
+      getData("blogs", auth.currentUser.uid)
+      .then(arr => {
+        setMyBlogs(arr)
+      })
+      .catch(err => {
+        alert(err)
+      })
+      showSnackbar()
     blogTitle.current.value = '';
     blogDescription.current.value = '';
   }
+
+
   return (
     <div style={{
       minHeight: '100vh'
@@ -103,10 +127,47 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="my-container">
-        <h1 className="text-black font-semibold my-5 text-xl">My blogs</h1>
+        <h1 className="text-black font-semibold mt-10 mb-5 text-xl">My blogs</h1>
         <div id="my-blog-wrapper" className="flex max-w-4xl gap-[1.25rem] flex-col">
-          <div className="text-center mt-[3rem]">
-            <span className="loading loading-spinner loading-lg" />
+          <div className="text-center rounded mb-10 mt-[1rem]">
+            {myBlogs.length > 0 ? myBlogs.map((item) => {
+              return <div key={item.id}>
+                <div className="p-[1.3rem] flex flex-col bg-white">
+                  <div className="flex justify-start gap-4">
+                    <div>
+                      <img
+                        className="rounded-xl"
+                        width="70px"
+                        src={item.pfp}
+                        alt=""
+                      />
+                    </div>
+                    <div className="flex flex-col justify-end">
+                      <div>
+                        <h1 className="text-black text-left font-semibold text-lg">
+                          {item.title}
+                        </h1>
+                      </div>
+                      <div className="text-[#6C757D] mb-[3px] font-medium flex gap-2 ">
+                        <h1>
+                          {item.name}
+                          <span>
+                            {" "}
+                            - {item.time}
+                          </span>
+                        </h1>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <p className="text-[#6C757D] text-left">
+                      {item.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            }) : <span className="loading loading-spinner loading-lg" />}
+            {/* <span className="loading loading-spinner loading-lg" /> */}
           </div>
         </div>
       </div>

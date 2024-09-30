@@ -97,7 +97,10 @@ const getData = (colName, uid) => {
 
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            dataArr.push(doc.data())
+            dataArr.push({
+                id: doc.id,
+                ...doc.data()
+            })
             resolve(dataArr);
         });
         reject("error occured");

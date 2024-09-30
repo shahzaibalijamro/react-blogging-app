@@ -26,7 +26,7 @@ const Greeting = () => {
                 : 
                 currentPage === '/profile' 
                 ? 
-                <h1 className="text-black font-bold text-2xl">Dashboard</h1> 
+                <h1 className="text-black font-bold text-2xl">My profile</h1> 
                 : 
                 <h1 className="text-black font-bold text-2xl">{greet}</h1>}
             </div>
