@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { signOutUser } from '../config/firebase/firebasemethods';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { emptyUser } from '../config/redux/reducers/userSlice';
 const Navbar = () => {
     const userSelector = useSelector(state => state.user.user[0])
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
     const currentPage = location.pathname;
     const logOutUser = async () => {
         await signOutUser()
-        navigate('/login')
+        .then(() => {
+            console.log("user Signout Successfully");
+            dispatch(emptyUser());
+            navigate('/login')
+        })
+        .catch((error) => {
+            console.log(error);
+        });
     }
     return (
         <>
