@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Greeting from '../../components/Greeting'
 import './Profile.css'
 import { auth, db, getData, updateDocument, uploadImage } from '../../config/firebase/firebasemethods';
@@ -8,11 +8,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addUser } from '../../config/redux/reducers/userSlice';
 
 const Profile = () => {
-    const userSelector = useSelector(state => state.user.user[0])
     const dispatch = useDispatch();
-    useEffect(() => {
-        console.log("Updated selector:", userSelector);
-    }, []);
+    const userSelector = useSelector(state => state.user.user[0])
+    !userSelector ? getData("users", auth.currentUser.uid)
+        .then(arr => {
+            console.log(arr);
+            dispatch(addUser(
+                {
+                    user: arr
+                }
+            ))
+        })
+        .catch(err => {
+            console.log(err);
+        })
+        : null
     const showSnackbar = (num) => {
         var snackbar = document.getElementById(`snackbar${num}`);
         snackbar.className = "show";
@@ -34,7 +44,7 @@ const Profile = () => {
     const editPfp = async (event) => {
         const file = event.target.files[0];
         const url = await uploadImage(file, userSelector.email)
-        const dpRef = doc(db, "users", userSelector.uid);
+        const dpRef = doc(db, "users", userSelector.id);
         await updateDoc(dpRef, {
             pfp: url
         })
@@ -62,32 +72,30 @@ const Profile = () => {
             return;
         }
         try {
-            const nameRef = doc(db, "users", userSelector.uid);
+            const nameRef = doc(db, "users", userSelector.id);
             await updateDoc(nameRef, {
                 name: editedVal
             })
-            .then(msg => {
-                console.log(msg);
-                console.log("Name successfully updated in Firestore!");
-                dispatch(addUser(
-                    {
-                        user: {
-                            ...userSelector,
-                            name: editedVal
+                .then(msg => {
+                    console.log(msg);
+                    console.log("Name successfully updated in Firestore!");
+                    dispatch(addUser(
+                        {
+                            user: {
+                                ...userSelector,
+                                name: editedVal
+                            }
                         }
-                    }
-                ))
-                showSnackbar(2);
-            })
-            .catch(err => {
-                console.log(err);
-            })
+                    ))
+                    showSnackbar(2);
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         } catch (err) {
             console.error("Error updating document:", err);
         }
     };
-
-
     return (
         <div style={{
             minHeight: '100vh'
