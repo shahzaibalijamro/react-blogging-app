@@ -1,50 +1,42 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './dashboard.css'
 import Greeting from '../../components/Greeting'
-import { auth, db, getData, sendData } from '../../config/firebase/firebasemethods';
+import { auth, getData, sendData } from '../../config/firebase/firebasemethods';
 import { useDispatch, useSelector } from 'react-redux';
-import { onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs, query, where } from 'firebase/firestore';
 import { addUser } from '../../config/redux/reducers/userSlice';
 const Dashboard = () => {
   const [myBlogs, setMyBlogs] = useState([]);
-  const selector = useSelector(state => state.user.user);
+  const userSelector = useSelector(state => state.user.user[0])
   const blogTitle = useRef();
   const blogDescription = useRef();
   const dispatch = useDispatch();
-
   const showSnackbar = () => {
     var snackbar = document.getElementById("snackbar");
     snackbar.className = "show";
     setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
-}
-
+  }
   useEffect(() => {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const q = query(
-          collection(db, "users"),
-          where("uid", "==", user.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const userData = querySnapshot.docs.map((doc) => doc.data());
+    !userSelector ? getData("users", auth.currentUser.uid)
+      .then(arr => {
+        console.log(arr);
         dispatch(addUser(
           {
-            user: userData[0]
+            user: arr
           }
         ))
-        getData("blogs", user.uid)
-          .then(arr => {
-            setMyBlogs(arr)
-          })
-          .catch(err => {
-            console.log(err);
-          })
-      } else {
-        null
-      }
-    });
-  }, [])
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      : null
+    getData("blogs", auth.currentUser.uid)
+      .then(arr => {
+        setMyBlogs(arr)
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  });
   const pushDataToFirestore = (event) => {
     event.preventDefault();
     const current = new Date();
@@ -78,14 +70,14 @@ const Dashboard = () => {
       .then((res) => {
         console.log(res);
       })
-      getData("blogs", auth.currentUser.uid)
+    getData("blogs", auth.currentUser.uid)
       .then(arr => {
         setMyBlogs(arr)
       })
       .catch(err => {
         alert(err)
       })
-      showSnackbar()
+    showSnackbar()
     blogTitle.current.value = '';
     blogDescription.current.value = '';
   }
