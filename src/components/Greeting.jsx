@@ -14,21 +14,21 @@ const Greeting = () => {
                     ? 'Good Evening Readers!' 
                     : 'Good Night Readers!'
     return (
-        <div className="p-[1.5rem] bg-white">
+        <div className="p-[1.5rem] greet bg-white">
             <div className="my-container">
                 {currentPage === '/dashboard' 
                 ?
-                <h1 className="text-black font-bold text-2xl">Dashboard</h1> 
+                <h1 className="text-black greetText font-bold text-2xl">Dashboard</h1> 
                 : 
                 currentPage === '/singleuser' 
                 ? 
-                <h1 className="font-bold cursor-pointer text-2xl text-[#7749f8]"><Link to={'/'}>&lt; Back to All Blogs</Link></h1> 
+                <h1 className="greetText font-bold cursor-pointer text-2xl text-[#7749f8]"><Link to={'/'}>&lt; Back to All Blogs</Link></h1> 
                 : 
                 currentPage === '/profile' 
                 ? 
-                <h1 className="text-black font-bold text-2xl">My profile</h1> 
+                <h1 className="text-black greetText font-bold text-2xl">My profile</h1> 
                 : 
-                <h1 className="text-black font-bold text-2xl">{greet}</h1>}
+                <h1 className="text-black greetText font-bold text-2xl">{greet}</h1>}
             </div>
         </div>
     )

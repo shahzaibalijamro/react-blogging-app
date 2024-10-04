@@ -3,7 +3,7 @@ import Greeting from '../../components/Greeting'
 import './Profile.css'
 import { auth, db, getData, updateDocument, uploadImage } from '../../config/firebase/firebasemethods';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux';
 import { addUser } from '../../config/redux/reducers/userSlice';
 
@@ -23,15 +23,16 @@ const Profile = () => {
             console.log(err);
         })
         : null
-    const showSnackbar = (num) => {
-        var snackbar = document.getElementById(`snackbar${num}`);
+    const showSnackbar = (innerText,time = 3000) => {
+        var snackbar = document.getElementById(`snackbar`);
+        snackbar.innerHTML = innerText;
         snackbar.className = "show";
-        setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
+        setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, time);
     }
     const passwordReset = () => {
         sendPasswordResetEmail(auth, userSelector.email)
             .then(() => {
-                showSnackbar(3);
+                showSnackbar(`Password reset email has been sent to your registered email address at <br/> ${userSelector.email}!`)
             })
             .catch((error) => {
                 alert(errorMessage)
@@ -42,6 +43,7 @@ const Profile = () => {
         fileInput.click();
     }
     const editPfp = async (event) => {
+        showSnackbar(`Updating profile picture!`,1500)
         const file = event.target.files[0];
         const url = await uploadImage(file, userSelector.email)
         const dpRef = doc(db, "users", userSelector.id);
@@ -58,7 +60,8 @@ const Profile = () => {
                         }
                     }
                 ))
-                showSnackbar(1)
+                showSnackbar(`Profile picture updated!`);
+                getMyBlogs('pfp',url);
             })
             .catch(err => {
                 console.log(err);
@@ -87,7 +90,8 @@ const Profile = () => {
                             }
                         }
                     ))
-                    showSnackbar(2);
+                    showSnackbar(`Name updated!`)
+                    getMyBlogs('name',editedVal);
                 })
                 .catch(err => {
                     console.log(err);
@@ -96,13 +100,29 @@ const Profile = () => {
             console.error("Error updating document:", err);
         }
     };
+    const currentUserBlogs = [];
+    async function getMyBlogs(key,value) {
+        const usersRef = collection(db, "blogs");
+        const q = query(usersRef, where("uid", "==", userSelector.uid));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            currentUserBlogs.push({
+                id: doc.id
+            })
+        });
+        for (let i = 0; i < currentUserBlogs.length; i++) {
+            const editedVal = value;
+            const userNameRef = doc(db, "blogs", currentUserBlogs[i].id);
+            await updateDoc(userNameRef, {
+                [key]: editedVal
+            });
+        }
+    }
     return (
         <div style={{
             minHeight: '100vh'
         }}>
-            <div id="snackbar1">Profile Picture Updated!</div>
-            <div id="snackbar2">Name Updated!</div>
-            <div className='text-center' id="snackbar3">Password reset email has been sent to your registered email address <br /> {userSelector ? userSelector.email : null}!</div>
+            <div id="snackbar"></div>
             <Greeting />
             <div className="my-container">
                 <div className="p-[2rem] profile-wrapper w-full bg-white mt-5 gap-4rounded-xl gap-[1.25rem]">

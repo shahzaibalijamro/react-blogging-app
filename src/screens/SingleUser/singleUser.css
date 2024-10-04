@@ -79,27 +79,45 @@ input:hover {
 
 
 @media(min-width:1300px){
-    #sidebar{
+    #sidebarSingle{
         width: 100%;
         max-width: 300px;
     }
 }
 
-@media(max-width:1150px){
+@media(max-width:1000px){
     .my-5{
         padding: 0px 3px !important;
     }
-    #sidebar{
+    #sidebarSingle{
         order: -1 !important;
         width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebarIn{
+        order: -1 !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px !important;
+    }
+    .order-1{
+        order: -1 !important;
+        margin-bottom: 10px !important;
+    }
+    .order0{
+        order: 0 !important;
+    }
+    .order1{
+        order: 1 !important;
     }
     #left{
         max-width: 100% !important;
         width: 100% !important;
     }
-    .main-wrapper{
+    .main-wrapperSingle{
         flex-wrap: wrap !important;
-        gap: 0 !important;
     }
 }
 
@@ -121,7 +139,7 @@ input:hover {
     .greetText{
         font-size: 1.3rem !important;
     }
-    #all-blogs-wrapper{
+    #my-blog-wrapper{
         padding: 1rem !important;
     }
     .blogImg{
@@ -153,7 +171,7 @@ input:hover {
         font-size: 1.2rem !important;
         text-align: center;
     }
-    #all-blogs-wrapper{
+    #my-blog-wrapper{
         padding: 0.3rem !important;
     }
     .blogImg{
@@ -192,7 +210,7 @@ input:hover {
 
 
 @media(max-width:450px){
-    #all-blogs-wrapper{
+    #my-blog-wrapper{
         padding: 0rem !important;
     }
 }

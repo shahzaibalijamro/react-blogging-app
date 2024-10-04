@@ -1,9 +1,12 @@
 import React, { useRef } from 'react'
 import './register.css'
 import { Link, useNavigate } from 'react-router-dom';
-import { signUpUser, uploadImage } from '../../config/firebase/firebasemethods.js';
+import { signOutUser, signUpUser, uploadImage } from '../../config/firebase/firebasemethods.js';
+import { emptyUser } from '../../config/redux/reducers/userSlice.js';
+import { useDispatch } from 'react-redux';
 const Register = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const firstNameRef = useRef();
   const lastNameRef = useRef();
   const emailRef = useRef();
@@ -18,8 +21,12 @@ const Register = () => {
       password: passwordRef.current.value,
       name: `${firstNameRef.current.value} ${lastNameRef.current.value}`,
       pfp: url
+    }).then(res => {
+      console.log(res);
+      navigate('/login')
+    }).catch(err => {
+      console.log(err);
     }) : alert('Passwords do not match!')
-    navigate('/login')
   }
   return (
     <div className="h-[100vh] flex justify-center p-5 items-center">

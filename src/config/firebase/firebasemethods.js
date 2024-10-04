@@ -1,4 +1,4 @@
-import { app,auth,db } from "./config.js";
+import { app, auth, db } from "./config.js";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -14,9 +14,8 @@ import {
     doc,
     updateDoc,
 } from "firebase/firestore";
-
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 // register user
 let signUpUser = (obj) => {
@@ -28,6 +27,8 @@ let signUpUser = (obj) => {
                 await addDoc(collection(db, "users"), obj)
                     .then((res) => {
                         console.log("user added to database successfully");
+                        signOutUser()
+                        console.log("user Signout Successfully");
                     })
                     .catch((err) => {
                         console.log(err);

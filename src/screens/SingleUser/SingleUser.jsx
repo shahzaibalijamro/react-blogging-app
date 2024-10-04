@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import '../Home/style.css'
+import './singleUser.css'
 import Greeting from '../../components/Greeting'
 import { getData } from '../../config/firebase/firebasemethods';
 const SingleUser = () => {
@@ -30,7 +30,7 @@ const SingleUser = () => {
       <Greeting />
       <div className="my-container">
         <h1 className="text-black font-semibold my-5 text-xl">All blogs</h1>
-        <div className="flex gap-x-[2rem] justify-between">
+        <div className="flex main-wrapperSingle gap-x-[2rem] justify-between">
           <div className="flex max-w-[64rem] w-[64rem] gap-[1.25rem] flex-col">
             <div
               id="my-blog-wrapper"
@@ -108,7 +108,7 @@ const SingleUser = () => {
               </div>
             </div>
           </div>
-          <div id="sidebar">
+          <div id="sidebarSingle">
             <div className="flex mb-5 justify-center">
               <div className="group">
                 <svg className="icon" aria-hidden="true" viewBox="0 0 24 24">
@@ -119,17 +119,17 @@ const SingleUser = () => {
                 <input onInput={searchBlogs} placeholder="Search" type="search" className="input-search" ref={inputSearch}/>
               </div>
             </div>
-            {singleUser ? <>
-              <h1 className="font-semibold text-end text-black text-xl">
+            {singleUser ? <div className='sidebarIn'>
+              <h1 className="font-semibold text-end order1 text-black text-xl">
                 {singleUser.email}
               </h1>
-              <h1 className="font-bold text-3xl text-end text-[#7749f8]">
+              <h1 className="font-bold text-3xl order0 text-end text-[#7749f8]">
                 {singleUser.name}
               </h1>
-              <div className="flex mt-4 justify-end">
+              <div className="flex mt-4 order-1 justify-end">
                 <img className="rounded-xl" width="200px" src={singleUser.pfp} alt="" />
               </div>
-            </> : null}
+            </div> : null}
           </div>
         </div>
       </div>

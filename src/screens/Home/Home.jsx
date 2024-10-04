@@ -68,8 +68,8 @@ const Home = () => {
       <Greeting />
       <div className="my-container">
         <h1 className="text-black font-semibold my-5 text-xl">All blogs</h1>
-        <div className="flex gap-x-[2rem] justify-between">
-          <div className="flex max-w-[64rem] w-[64rem] gap-[1.25rem] flex-col">
+        <div className="flex gap-x-[2rem] main-wrapper justify-between">
+          <div id='left' className="flex max-w-[64rem] w-[64rem] gap-[1.25rem] flex-col">
             <div
               id="all-blogs-wrapper"
               className="p-[1.3rem] flex flex-col rounded-xl bg-white"
@@ -78,9 +78,9 @@ const Home = () => {
                 {allBlogs.length > 0 && searchedBlogs.length > 0 ? searchedBlogs.map((item, index) => {
                   return <div key={item.documentId}>
                     <div className="p-[1rem] text-left flex flex-col rounded-xl bg-white">
-                      <div className="flex justify-start gap-4">
+                      <div className="flex justify-start blogWrapper gap-4">
                         <div>
-                          <img className="rounded-xl" width="70px" src={item.pfp} alt="" />
+                          <img className="rounded-xl blogImg" width="70px" src={item.pfp} alt="" />
                         </div>
                         <div className="flex flex-col justify-end">
                           <div>
@@ -89,7 +89,7 @@ const Home = () => {
                             </h1>
                           </div>
                           <div className="text-[#6C757D] mb-[3px] font-medium flex gap-2 ">
-                            <h1>
+                            <h1 class="blogTime">
                               {item.name}
                               <span>
                                 {" "}
@@ -114,9 +114,9 @@ const Home = () => {
                 }) : allBlogs.length > 0 ? allBlogs.map((item, index) => {
                   return <div key={item.documentId}>
                     <div className="p-[1rem] text-left flex flex-col rounded-xl bg-white">
-                      <div className="flex justify-start gap-4">
+                      <div className="flex justify-start blogWrapper gap-4">
                         <div>
-                          <img className="rounded-xl" width="70px" src={item.pfp} alt="" />
+                          <img className="rounded-xl blogImg" width="70px" src={item.pfp} alt="" />
                         </div>
                         <div className="flex flex-col justify-end">
                           <div>
@@ -125,7 +125,7 @@ const Home = () => {
                             </h1>
                           </div>
                           <div className="text-[#6C757D] mb-[3px] font-medium flex gap-2 ">
-                            <h1>
+                            <h1 class="blogTime">
                               {item.name}
                               <span>
                                 {" "}

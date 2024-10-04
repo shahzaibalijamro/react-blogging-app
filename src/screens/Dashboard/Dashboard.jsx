@@ -144,7 +144,7 @@ const Dashboard = () => {
                     <div className="p-[1rem] text-left flex flex-col rounded-xl bg-white">
                       <div className="flex justify-start gap-4">
                         <div>
-                          <img className="rounded-xl" width="70px" src={item.pfp} alt="" />
+                          <img className="rounded-xl" width="70px" src={userSelector.pfp} alt="" />
                         </div>
                         <div className="flex flex-col justify-end">
                           <div>
@@ -154,7 +154,7 @@ const Dashboard = () => {
                           </div>
                           <div className="text-[#6C757D] mb-[3px] font-medium flex gap-2 ">
                             <h1>
-                              {item.name}
+                              {userSelector.name}
                               <span>
                                 {" "}
                                 - {item.time}
@@ -183,7 +183,7 @@ const Dashboard = () => {
                           <img
                             className="rounded-xl"
                             width="70px"
-                            src={item.pfp}
+                            src={userSelector.pfp}
                             alt=""
                           />
                         </div>
@@ -195,7 +195,7 @@ const Dashboard = () => {
                           </div>
                           <div className="text-[#6C757D] mb-[3px] font-medium flex gap-2 ">
                             <h1>
-                              {item.name}
+                              {userSelector.name}
                               <span>
                                 {" "}
                                 - {item.time}

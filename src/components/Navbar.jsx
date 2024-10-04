@@ -24,9 +24,9 @@ const Navbar = () => {
         <>
             {userSelector ? <div className="px-5 navbar bg-[#7749f8] relative text-white">
                 <div className="flex-1">
-                    <Link to={'/'} className="btn btn-ghost text-xl">Blogging App</Link>
+                    <Link to={'/'} className="btn logo btn-ghost text-xl">Blogging App</Link>
                 </div>
-                <div className="flex-none gap-2">
+                <div className="flex-none navbarRight gap-2">
                     <a className="btn btn-ghost nav-username text-xl">{userSelector.name}</a>
                     <div className="dropdown items-center dropdown-end">
                         <div
@@ -87,14 +87,14 @@ const Navbar = () => {
                 <div className={currentPage === '/login' || currentPage === '/register' ? "px-5 bg-[#7749f8] navbar text-white" : "px-5 bg-[#7749f8] text-white navbar relative"}>
                     <div className="flex-1">
                         {currentPage === '/login' ? (
-                            <a className="btn btn-ghost text-xl">Login</a>
+                            <a className="btn logo btn-ghost text-xl">Login</a>
                         ) : currentPage === '/register' ? (
-                            <a className="btn btn-ghost text-xl">Register</a>
+                            <a className="btn logo btn-ghost text-xl">Register</a>
                         ) : (
-                            <Link to={'/'} className="btn btn-ghost text-xl">Blogging App</Link>
+                            <Link to={'/'} className="btn logo btn-ghost text-xl">Blogging App</Link>
                         )}
                     </div>
-                    <div className="flex-none gap-2">
+                    <div className="flex-none navbarRight gap-2">
                         <a className="btn btn-ghost nav-username text-xl" />
                         <div className="dropdown items-center dropdown-end">
                             <div
@@ -114,9 +114,31 @@ const Navbar = () => {
                                 tabIndex={0}
                                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
                             >
-                                <li className="nav-login-btn">
-                                    <Link to={'/login'}>Login</Link>
+                                {currentPage === '/login' ? <>
+                                <li className="profileBtn">
+                                    <Link to={'/'} className="justify-between">
+                                        Home
+                                    </Link>
                                 </li>
+                                <li className="profileBtn">
+                                    <Link to={'/register'} className="justify-between">
+                                        Register
+                                    </Link>
+                                </li>
+                                </> : currentPage === '/register' ? 
+                                <><li className="dashboardBtn">
+                                    <Link to={'/'}>Home</Link>
+                                </li>
+                                    <li className="dashboardBtn">
+                                        <Link to={'/login'}>Login</Link>
+                                    </li>
+                                    </> : <>
+                                <li className="profileBtn">
+                                    <Link to={'/login'} className="justify-between">
+                                        Login
+                                    </Link>
+                                </li>
+                            </>}
                             </ul>
                         </div>
                     </div>
