@@ -1,49 +1,53 @@
 import React, { useEffect, useState } from 'react'
 import './style.css'
 import Greeting from '../../components/Greeting'
-import { auth, db, getAllData } from '../../config/firebase/firebasemethods';
+import { auth, getAllData, getData } from '../../config/firebase/firebasemethods';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { addUser } from '../../config/redux/reducers/userSlice';
 import { onAuthStateChanged } from 'firebase/auth';
+import { addUser } from '../../config/redux/reducers/userSlice';
+import { addAllBlogs } from '../../config/redux/reducers/allBlogsSlice';
 const Home = () => {
-  const dispatch = useDispatch();
-  const selector = useSelector(state => state.user.user)
-  selector ? getDataFromFirestoreFirebase() : null
   const [allBlogs, setAllBlogs] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const blogSelector = useSelector(state => state.allBlogs.blogs)
   useEffect(() => {
-    getAllData("blogs")
+    blogSelector.length > 0 ? setAllBlogs(blogSelector) : getAllData("blogs")
       .then(arr => {
         setAllBlogs(arr)
         console.log(arr);
+        dispatch(addAllBlogs({
+          arr,
+        }))
       })
       .catch(err => {
-        alert(err)
-      })
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          getDataFromFirestoreFirebase()
-        } else {
-          null
-        }
+        console.log(err)
       });
-  }, [])
-  async function getDataFromFirestoreFirebase() {
-    const q = query(
-      collection(db, "users"),
-      where("uid", "==", auth.currentUser.uid)
-    );
-    const querySnapshot = await getDocs(q);
-    const userData = querySnapshot.docs.map((doc) => doc.data());
-    dispatch(addUser(
-      {
-        user: userData[0]
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log(user);
+        getUserData()
+      } else {
+        null
       }
-    ))
+    })
+  }, [])
+  function getUserData() {
+    getData("users", auth.currentUser.uid)
+      .then(arr => {
+        console.log(arr);
+        dispatch(addUser(
+          {
+            user: arr
+          }
+        ))
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
-  const goToSinglePage = (index)=>{
+  const goToSinglePage = (index) => {
     localStorage.setItem('singleUser', JSON.stringify(allBlogs[index]));
     navigate('/singleuser')
   }
@@ -91,8 +95,8 @@ const Home = () => {
                         </p>
                       </div>
                       <div className="mt-3">
-                        <p onClick={()=> goToSinglePage(index)} id="seeAll" className="text-[#7749f8] cursor-pointer font-semibold">
-                          <p>see all from this user</p>
+                        <p onClick={() => goToSinglePage(index)} id="seeAll" className="text-[#7749f8] cursor-pointer font-semibold">
+                          <span>see all from this user</span>
                         </p>
                       </div>
                     </div>

@@ -44,14 +44,7 @@ let loginUser = (obj) => {
     return new Promise((resolve, reject) => {
         signInWithEmailAndPassword(auth, obj.email, obj.password)
             .then(async () => {
-                const q = query(
-                    collection(db, "users"),
-                    where("uid", "==", auth.currentUser.uid)
-                );
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach((doc) => {
-                    resolve(doc.data());
-                });
+                resolve("user logged in")
             })
             .catch((err) => {
                 reject(err);

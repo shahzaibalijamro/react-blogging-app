@@ -2,24 +2,21 @@ import React, { useEffect, useRef, useState } from 'react'
 import './login.css'
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, loginUser } from '../../config/firebase/firebasemethods';
-import { onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 const Login = () => {
   const navigate = useNavigate();
   const emailRef = useRef();
   const passwordRef = useRef();
   const signInUser = async event => {
     event.preventDefault();
-    await loginUser({
-      email: emailRef.current.value,
-      password: passwordRef.current.value
-    })
-    .then(res => {
-      console.log(res);
-    })
-    .catch(err => {
-      alert(err)
-    })
-    navigate('/dashboard')
+    signInWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
+      .then((userCredential) => {
+        navigate('/')
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        alert(errorMessage)
+      });
   }
   return (
     <div className="h-[100vh] flex justify-center p-5 items-center">

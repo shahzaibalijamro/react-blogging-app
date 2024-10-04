@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import '../Home/style.css'
 import Greeting from '../../components/Greeting'
 import { getData } from '../../config/firebase/firebasemethods';
-const singleUser = JSON.parse(localStorage.getItem('singleUser'));
 const SingleUser = () => {
+  const singleUser = JSON.parse(localStorage.getItem('singleUser'));
   const[singleUserBlogs,setSingleUserBlogs] = useState([]);
   console.log(singleUser);
   useEffect(()=>{

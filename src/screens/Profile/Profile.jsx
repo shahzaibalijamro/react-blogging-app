@@ -8,20 +8,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addUser } from '../../config/redux/reducers/userSlice';
 
 const Profile = () => {
-    const selector = useSelector(state => state.user.user)
-    console.log(selector.email);
-    
+    const userSelector = useSelector(state => state.user.user[0])
     const dispatch = useDispatch();
     useEffect(() => {
-        console.log("Updated selector:", selector);
-    }, [selector]);
+        console.log("Updated selector:", userSelector);
+    }, []);
     const showSnackbar = (num) => {
         var snackbar = document.getElementById(`snackbar${num}`);
         snackbar.className = "show";
         setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
     }
     const passwordReset = () => {
-        sendPasswordResetEmail(auth, selector.email)
+        sendPasswordResetEmail(auth, userSelector.email)
             .then(() => {
                 showSnackbar(3);
             })
@@ -35,68 +33,55 @@ const Profile = () => {
     }
     const editPfp = async (event) => {
         const file = event.target.files[0];
-        const url = await uploadImage(file, selector.email)
-        updateDocument({ pfp: url }, selector.uid, "users")
+        const url = await uploadImage(file, userSelector.email)
+        const dpRef = doc(db, "users", userSelector.uid);
+        await updateDoc(dpRef, {
+            pfp: url
+        })
             .then(msg => {
                 console.log(msg);
                 dispatch(addUser(
                     {
                         user: {
-                            ...selector,
+                            ...userSelector,
                             pfp: url
                         }
                     }
                 ))
+                showSnackbar(1)
             })
             .catch(err => {
                 console.log(err);
             })
-        showSnackbar(1)
         event.target.value = ''
     }
-    // const editName = async ()=>{
-    //     const editedVal = prompt("Enter new name!");
-    //     console.log(selector);
-    //     editedVal ? updateDocument({name: editedVal}, selector.uid, "users")
-    //     .then(msg => {
-    //         console.log(editedVal);
-    //         dispatch(addUser(
-    //             {
-    //                 user: {
-    //                     ...selector,
-    //                     name: editedVal
-    //                 }
-    //             }
-    //         ))
-    //         showSnackbar(2)
-    //     })
-    //     .catch(err => {
-    //         console.log(err);
-    //     }) : alert('Enter a value!')
-    // }
     const editName = async () => {
         const editedVal = prompt("Enter new name!");
-
         if (!editedVal || editedVal.trim() === "") {
             alert('Please enter a valid name!');
             return;
         }
-
         try {
-            const userDocRef = doc(db, "users", selector.uid);
-            await updateDoc(userDocRef, { name: editedVal });
-
-            console.log("Name successfully updated in Firestore!");
-
-            // Update Redux state
-            dispatch(addUser({
-                user: {
-                    ...selector,
-                    name: editedVal
-                }
-            }));
-
-            showSnackbar(2);
+            const nameRef = doc(db, "users", userSelector.uid);
+            await updateDoc(nameRef, {
+                name: editedVal
+            })
+            .then(msg => {
+                console.log(msg);
+                console.log("Name successfully updated in Firestore!");
+                dispatch(addUser(
+                    {
+                        user: {
+                            ...userSelector,
+                            name: editedVal
+                        }
+                    }
+                ))
+                showSnackbar(2);
+            })
+            .catch(err => {
+                console.log(err);
+            })
         } catch (err) {
             console.error("Error updating document:", err);
         }
@@ -109,14 +94,14 @@ const Profile = () => {
         }}>
             <div id="snackbar1">Profile Picture Updated!</div>
             <div id="snackbar2">Name Updated!</div>
-            <div className='text-center' id="snackbar3">Password reset email has been sent to your registered email address <br /> {selector ? selector.email : null}!</div>
+            <div className='text-center' id="snackbar3">Password reset email has been sent to your registered email address <br /> {userSelector ? userSelector.email : null}!</div>
             <Greeting />
             <div className="my-container">
                 <div className="p-[2rem] profile-wrapper w-full bg-white mt-5 gap-4rounded-xl gap-[1.25rem]">
                     <div className="text-center mt-[3rem]">
-                        {selector ? <>
+                        {userSelector ? <>
                             <div className="max-w-[225px] mx-auto relative">
-                                <img className="w-full rounded-full mx-auto" id="pfp" src={selector.pfp} alt="" />
+                                <img className="w-full rounded-full mx-auto" id="pfp" src={userSelector.pfp} alt="" />
                                 <div
                                     onClick={clickIcon}
                                     className="absolute bottom-0 right-0 rounded-full p-2 cursor-pointer"
@@ -127,7 +112,7 @@ const Profile = () => {
                             </div>
                             <div className="flex justify-center mt-5 items-center">
                                 <h1 className="text-center font-semibold text-3xl text-black">
-                                    {selector.name}
+                                    {userSelector.name}
                                 </h1>
                                 <img
                                     onClick={editName}

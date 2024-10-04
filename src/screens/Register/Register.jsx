@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import './register.css'
 import { Link, useNavigate } from 'react-router-dom';
 import { signUpUser, uploadImage } from '../../config/firebase/firebasemethods.js';

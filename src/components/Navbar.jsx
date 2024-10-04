@@ -1,40 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { auth, db } from '../config/firebase/config';
-import { onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { signOutUser } from '../config/firebase/firebasemethods';
-import { useDispatch, useSelector } from 'react-redux';
-import { addUser } from '../config/redux/reducers/userSlice';
+import { useSelector } from 'react-redux';
 const Navbar = () => {
-    const [userState, setUserState] = useState(false);
-    const [currentUser, setCurrentUser] = useState([]);
+    const userSelector = useSelector(state => state.user.user[0])
     const navigate = useNavigate();
-    const selector = useSelector(state => state.user.user);
-    const dispatch = useDispatch();
     const location = useLocation();
     const currentPage = location.pathname;
-    useEffect(() => {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                setUserState(true)
-            } else {
-                setUserState(false)
-            }
-        });
-    }, [])
     const logOutUser = async () => {
         await signOutUser()
         navigate('/login')
     }
     return (
         <>
-            {userState && selector ? <div className="px-5 navbar bg-[#7749f8] relative text-white">
+            {userSelector ? <div className="px-5 navbar bg-[#7749f8] relative text-white">
                 <div className="flex-1">
                     <Link to={'/'} className="btn btn-ghost text-xl">Blogging App</Link>
                 </div>
                 <div className="flex-none gap-2">
-                    <a className="btn btn-ghost nav-username text-xl">{selector.name}</a>
+                    <a className="btn btn-ghost nav-username text-xl">{userSelector.name}</a>
                     <div className="dropdown items-center dropdown-end">
                         <div
                             tabIndex={0}
@@ -45,7 +29,7 @@ const Navbar = () => {
                                 <img
                                     id="pfp"
                                     alt="Tailwind CSS Navbar component"
-                                    src={selector.pfp}
+                                    src={userSelector.pfp}
                                 />
                             </div>
                         </div>
