@@ -7,6 +7,7 @@ import { addUser } from '../../config/redux/reducers/userSlice';
 const Dashboard = () => {
   const inputSearch = useRef();
   const [searchedBlogs,setSearchedBlogs] = useState([]);
+  const [gotData,setGotData] = useState(false);
   const [myBlogs, setMyBlogs] = useState([]);
   const userSelector = useSelector(state => state.user.user[0])
   const blogTitle = useRef();
@@ -20,7 +21,6 @@ const Dashboard = () => {
   useEffect(() => {
     !userSelector ? getData("users", auth.currentUser.uid)
       .then(arr => {
-        console.log(arr);
         dispatch(addUser(
           {
             user: arr
@@ -36,9 +36,10 @@ const Dashboard = () => {
         setMyBlogs(arr)
       })
       .catch(err => {
+        setGotData(true);
         console.log(err);
       })
-  });
+  },[]);
   const pushDataToFirestore = (event) => {
     event.preventDefault();
     const current = new Date();
@@ -99,8 +100,8 @@ const Dashboard = () => {
       <div id="snackbar">Blog posted!</div>
       <Greeting />
       <div className="my-container">
-        <div className="flex max-w-[64rem] mt-5 gap-[1.25rem] flex-col">
-          <div className="p-[2rem] gap-4rounded-xl bg-white">
+        <div className="flex mt-5 gap-[1.25rem] flex-col">
+          <div className="p-[2rem] blogPostWrapper gap-4 rounded-xl bg-white">
             <form onSubmit={pushDataToFirestore}>
               <input
                 type="text"
@@ -118,7 +119,7 @@ const Dashboard = () => {
               <div className="mt-3">
                 <button
                   type="submit"
-                  className="btn text-white bg-[#7749f8] border-[#7749f8] btn-active hover:bg-[#561ef3] btn-neutral"
+                  className="btn text-white postBtn bg-[#7749f8] border-[#7749f8] btn-active hover:bg-[#561ef3] btn-neutral"
                 >
                   Publish Blog
                 </button>
@@ -129,22 +130,22 @@ const Dashboard = () => {
       </div>
       <div className="my-container">
         <h1 className="text-black font-semibold my-5 text-xl">My blogs</h1>
-        <div className="flex gap-x-[2rem] main-wrapper justify-between">
+        <div className="flex gap-x-[2rem] main-wrapperDash justify-between">
           <div
-            id="left"
+            id="leftDash"
             className="flex max-w-[64rem] w-[64rem] gap-[1.25rem] flex-col"
           >
             <div
               id="my-blog-wrapper"
-              className="p-[1rem] flex flex-col rounded-xl bg-white"
+              className="p-[1rem] mb-[20px] flex flex-col rounded-xl bg-white"
             >
               <div className="text-center">
                 {myBlogs.length > 0 && searchedBlogs.length > 0 ? searchedBlogs.map((item, index) => {
                   return <div key={item.documentId}>
                     <div className="p-[1rem] text-left flex flex-col rounded-xl bg-white">
-                      <div className="flex justify-start gap-4">
+                      <div className="flex justify-start blogWrapper gap-4">
                         <div>
-                          <img className="rounded-xl" width="70px" src={userSelector.pfp} alt="" />
+                          <img className="rounded-xl blogImg" width="70px" src={userSelector.pfp} alt="" />
                         </div>
                         <div className="flex flex-col justify-end">
                           <div>
@@ -153,7 +154,7 @@ const Dashboard = () => {
                             </h1>
                           </div>
                           <div className="text-[#6C757D] mb-[3px] font-medium flex gap-2 ">
-                            <h1>
+                            <h1 className='blogTime'>
                               {userSelector.name}
                               <span>
                                 {" "}
@@ -178,10 +179,10 @@ const Dashboard = () => {
                 }) : myBlogs.length > 0 ? myBlogs.map((item) => {
                   return <div key={item.id}>
                     <div className="p-[1rem] flex flex-col bg-white">
-                      <div className="flex justify-start gap-4">
+                      <div className="flex justify-start blogWrapper gap-4">
                         <div>
                           <img
-                            className="rounded-xl"
+                            className="rounded-xl blogImg"
                             width="70px"
                             src={userSelector.pfp}
                             alt=""
@@ -194,7 +195,7 @@ const Dashboard = () => {
                             </h1>
                           </div>
                           <div className="text-[#6C757D] mb-[3px] font-medium flex gap-2 ">
-                            <h1>
+                            <h1 className='blogTime'>
                               {userSelector.name}
                               <span>
                                 {" "}
@@ -211,11 +212,11 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-                }) : <span className="loading loading-spinner loading-lg" />}
+                }) : gotData && myBlogs.length === 0 ? <h1 className='font-semibold my-6 text-xl text-black'>No Blogs Found...</h1> : <span className="loading my-6 loading-spinner loading-lg" />}
               </div>
             </div>
           </div>
-          <div id="sidebar">
+          <div id="sidebarDash">
             <div className="flex mb-5 justify-center">
               <div className="group">
                 <svg className="icon" aria-hidden="true" viewBox="0 0 24 24">

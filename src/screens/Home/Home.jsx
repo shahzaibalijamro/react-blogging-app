@@ -18,7 +18,6 @@ const Home = () => {
     blogSelector.length > 0 ? setAllBlogs(blogSelector) : getAllData("blogs")
       .then(arr => {
         setAllBlogs(arr)
-        console.log(arr);
         dispatch(addAllBlogs({
           arr,
         }))
@@ -38,7 +37,6 @@ const Home = () => {
   function getUserData() {
     getData("users", auth.currentUser.uid)
       .then(arr => {
-        console.log(arr);
         dispatch(addUser(
           {
             user: arr
@@ -72,7 +70,7 @@ const Home = () => {
           <div id='left' className="flex max-w-[64rem] w-[64rem] gap-[1.25rem] flex-col">
             <div
               id="all-blogs-wrapper"
-              className="p-[1.3rem] flex flex-col rounded-xl bg-white"
+              className="p-[1.3rem] mb-[20px] flex flex-col rounded-xl bg-white"
             >
               <div className="text-center">
                 {allBlogs.length > 0 && searchedBlogs.length > 0 ? searchedBlogs.map((item, index) => {

@@ -12,7 +12,6 @@ const Profile = () => {
     const userSelector = useSelector(state => state.user.user[0])
     !userSelector ? getData("users", auth.currentUser.uid)
         .then(arr => {
-            console.log(arr);
             dispatch(addUser(
                 {
                     user: arr

@@ -7,7 +7,6 @@ const SingleUser = () => {
   const singleUser = JSON.parse(localStorage.getItem('singleUser'));
   const[singleUserBlogs,setSingleUserBlogs] = useState([]);
   const [searchedBlogs,setSearchedBlogs] = useState([]);
-  console.log(singleUser);
   useEffect(()=>{
     getData("blogs", singleUser.uid)
     .then(arr => setSingleUserBlogs(arr))
@@ -34,15 +33,15 @@ const SingleUser = () => {
           <div className="flex max-w-[64rem] w-[64rem] gap-[1.25rem] flex-col">
             <div
               id="my-blog-wrapper"
-              className="p-[1.3rem] flex flex-col rounded-xl bg-white"
+              className="p-[1.3rem] mb-[20px] flex flex-col rounded-xl bg-white"
             >
               <div className="text-center">
                 {singleUserBlogs.length > 0 && searchedBlogs.length > 0 ? searchedBlogs.map((item, index) => {
                   return <div key={item.documentId}>
                     <div className="p-[1rem] text-left flex flex-col rounded-xl bg-white">
-                      <div className="flex justify-start gap-4">
+                      <div className="flex blogWrapper justify-start gap-4">
                         <div>
-                          <img className="rounded-xl" width="70px" src={item.pfp} alt="" />
+                          <img className="rounded-xl blogImg" width="70px" src={item.pfp} alt="" />
                         </div>
                         <div className="flex flex-col justify-end">
                           <div>
@@ -76,9 +75,9 @@ const SingleUser = () => {
                 }) : singleUserBlogs.length > 0 ? singleUserBlogs.map((item,index)=>{
                   return <div key={item.id}>
                   <div className="p-[1.3rem] text-left flex flex-col rounded-xl bg-white">
-                  <div className="flex justify-start gap-4">
+                  <div className="flex blogWrapper justify-start gap-4">
                     <div>
-                      <img className="rounded-xl" width="70px" src={item.pfp} alt="" />
+                      <img className="rounded-xl blogImg" width="70px" src={item.pfp} alt="" />
                     </div>
                     <div className="flex flex-col justify-end">
                       <div>

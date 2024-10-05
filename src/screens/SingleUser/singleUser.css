@@ -112,10 +112,6 @@ input:hover {
     .order1{
         order: 1 !important;
     }
-    #left{
-        max-width: 100% !important;
-        width: 100% !important;
-    }
     .main-wrapperSingle{
         flex-wrap: wrap !important;
     }
