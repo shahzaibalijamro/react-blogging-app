@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './dashboard.css'
 import Greeting from '../../components/Greeting'
-import { auth, getData, sendData } from '../../config/firebase/firebasemethods';
+import { auth, deleteDocument, getData, sendData } from '../../config/firebase/firebasemethods';
 import { useDispatch, useSelector } from 'react-redux';
 import { addUser } from '../../config/redux/reducers/userSlice';
 const Dashboard = () => {
   const inputSearch = useRef();
-  const [searchedBlogs,setSearchedBlogs] = useState([]);
-  const [gotData,setGotData] = useState(false);
+  const [searchedBlogs, setSearchedBlogs] = useState([]);
+  const [gotData, setGotData] = useState(false);
   const [myBlogs, setMyBlogs] = useState([]);
   const userSelector = useSelector(state => state.user.user[0])
   const blogTitle = useRef();
@@ -39,7 +39,7 @@ const Dashboard = () => {
         setGotData(true);
         console.log(err);
       })
-  },[]);
+  }, []);
   const pushDataToFirestore = (event) => {
     event.preventDefault();
     const current = new Date();
@@ -87,17 +87,63 @@ const Dashboard = () => {
   const searchBlogs = () => {
     const searchValue = inputSearch.current.value.toLowerCase();
     const filteredArr = myBlogs.filter(item => {
-        return item.title.toLowerCase().includes(searchValue) ||
-            item.description.toLowerCase().includes(searchValue);
+      return item.title.toLowerCase().includes(searchValue) ||
+        item.description.toLowerCase().includes(searchValue);
     });
     setSearchedBlogs(filteredArr)
   }
-
+  const deleteBlog = (i,id) => {
+    myBlogs.length === 1 ? setGotData(true) : null
+    myBlogs.splice(i,1);
+    setMyBlogs([...myBlogs]);
+    deleteDocument(id,'blogs')
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
   return (
     <div style={{
       minHeight: '100vh'
     }} className='bg-[#f8f9fa]'>
       <div id="snackbar">Blog posted!</div>
+      <dialog id="my_modal_1" className="modal">
+        <div className="modal-box bg-white">
+        <div className="gap-4 rounded-xl bg-white">
+            <form onSubmit={pushDataToFirestore}>
+              <input
+                type="text"
+                placeholder="Placeholder"
+                className="input blog-title input-bordered w-full"
+                required
+                ref={blogTitle}
+              />
+              <textarea
+                placeholder="What is in your mind?"
+                className="textarea mt-3 ps-[1rem] pt-[0.5rem] input-bordered blog-description text-[1rem] textarea-lg w-full"
+                required
+                ref={blogDescription}
+              />
+              <div className="mt-3">
+                <button
+                  type="submit"
+                  className="btn text-white postBtn bg-[#7749f8] border-[#7749f8] btn-active hover:bg-[#561ef3] btn-neutral"
+                >
+                  Publish Blog
+                </button>
+              </div>
+            </form>
+          </div>
+          <div className="modal-action">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
       <Greeting />
       <div className="my-container">
         <div className="flex mt-5 gap-[1.25rem] flex-col">
@@ -140,7 +186,7 @@ const Dashboard = () => {
               className="p-[1rem] mb-[20px] flex flex-col rounded-xl bg-white"
             >
               <div className="text-center">
-                {myBlogs.length > 0 && searchedBlogs.length > 0 ? searchedBlogs.map((item, index) => {
+                {myBlogs.length > 0 && searchedBlogs.length > 0 ? searchedBlogs.map((item,index) => {
                   return <div key={item.documentId}>
                     <div className="p-[1rem] text-left flex flex-col rounded-xl bg-white">
                       <div className="flex justify-start blogWrapper gap-4">
@@ -169,14 +215,17 @@ const Dashboard = () => {
                           {item.description}
                         </p>
                       </div>
-                      <div className="mt-3">
-                        <p onClick={() => goToSinglePage(index)} id="seeAll" className="text-[#7749f8] cursor-pointer font-semibold">
-                          <span>see all from this user</span>
+                      <div className="mt-3 flex justify-start gap-3 items-center">
+                        <p onClick={() => document.getElementById('my_modal_1').showModal()} id="seeAll" className="text-[#7749f8] cursor-pointer font-semibold">
+                          <span>Edit</span>
+                        </p>
+                        <p onClick={() => deleteBlog(index,item.id)} id="seeAll" className="text-[#7749f8] cursor-pointer font-semibold">
+                          <span>Delete</span>
                         </p>
                       </div>
                     </div>
                   </div>
-                }) : myBlogs.length > 0 ? myBlogs.map((item) => {
+                }) : myBlogs.length > 0 ? myBlogs.map((item,index) => {
                   return <div key={item.id}>
                     <div className="p-[1rem] flex flex-col bg-white">
                       <div className="flex justify-start blogWrapper gap-4">
@@ -210,6 +259,14 @@ const Dashboard = () => {
                           {item.description}
                         </p>
                       </div>
+                      <div className="mt-3 flex justify-start gap-3 items-center">
+                        <p onClick={() => document.getElementById('my_modal_1').showModal()} id="seeAll" className="text-[#7749f8] cursor-pointer font-semibold">
+                          <span>Edit</span>
+                        </p>
+                        <p onClick={() => deleteBlog(index,item.id)} id="seeAll" className="text-[#7749f8] cursor-pointer font-semibold">
+                          <span>Delete</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 }) : gotData && myBlogs.length === 0 ? <h1 className='font-semibold my-6 text-xl text-black'>No Blogs Found...</h1> : <span className="loading my-6 loading-spinner loading-lg" />}
@@ -224,12 +281,13 @@ const Dashboard = () => {
                     <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
                   </g>
                 </svg>
-                <input onInput={searchBlogs} placeholder="Search" type="search" className="input-search" ref={inputSearch}/>
+                <input onInput={searchBlogs} placeholder="Search" type="search" className="input-search" ref={inputSearch} />
               </div>
             </div>
           </div>
         </div>
       </div>
-      </div>
-      )}
+    </div>
+  )
+}
 export default Dashboard
