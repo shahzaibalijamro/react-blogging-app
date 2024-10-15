@@ -87,7 +87,7 @@ const Home = () => {
                             </h1>
                           </div>
                           <div className="text-[#6C757D] mb-[3px] font-medium flex gap-2 ">
-                            <h1 class="blogTime">
+                            <h1 className="blogTime">
                               {item.name}
                               <span>
                                 {" "}
@@ -123,7 +123,7 @@ const Home = () => {
                             </h1>
                           </div>
                           <div className="text-[#6C757D] mb-[3px] font-medium flex gap-2 ">
-                            <h1 class="blogTime">
+                            <h1 className="blogTime">
                               {item.name}
                               <span>
                                 {" "}
