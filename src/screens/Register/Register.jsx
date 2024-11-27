@@ -23,8 +23,9 @@ const Register = () => {
       pfp: url
     }).then(async res => {
       console.log(res);
-      await signOutUser()
-      navigate('/')
+      await signOutUser();
+      dispatch(emptyUser());
+      navigate('/login')
     }).catch(err => {
       console.log(err);
     }) : alert('Passwords do not match!')
