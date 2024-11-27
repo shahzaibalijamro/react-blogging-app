@@ -29,8 +29,8 @@ const Register = () => {
     }) : alert('Passwords do not match!')
   }
   return (
-    <div className="h-[100vh] flex justify-center p-5 items-center">
-      <div className="max-w-xl w-[512px]">
+    <div className="min-h-[100vh] h-full mt-[40px] flex justify-center p-5 items-center">
+      <div className="max-w-xl mb-[30px] w-[512px]">
         <h1 className="text-3xl text-center font-semibold text-black mt-5 mb-5">
           Register
         </h1>
