@@ -23,7 +23,7 @@ const Register = () => {
       pfp: url
     }).then(res => {
       console.log(res);
-      navigate('/login')
+      navigate('/')
     }).catch(err => {
       console.log(err);
     }) : alert('Passwords do not match!')
