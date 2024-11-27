@@ -21,8 +21,9 @@ const Register = () => {
       password: passwordRef.current.value,
       name: `${firstNameRef.current.value} ${lastNameRef.current.value}`,
       pfp: url
-    }).then(res => {
+    }).then(async res => {
       console.log(res);
+      await signOutUser()
       navigate('/')
     }).catch(err => {
       console.log(err);
