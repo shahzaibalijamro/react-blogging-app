@@ -37,8 +37,8 @@ const Home = () => {
       }
     })
   }, [])
-  function getUserData() {
-    getData("users", auth.currentUser.uid)
+  async function getUserData() {
+    await getData("users", auth.currentUser.uid)
       .then(arr => {
         dispatch(addUser(
           {

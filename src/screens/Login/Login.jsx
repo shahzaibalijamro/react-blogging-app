@@ -1,16 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './login.css'
 import { Link, useNavigate } from 'react-router-dom';
-import { auth, loginUser } from '../../config/firebase/firebasemethods';
+import { auth, getData, loginUser } from '../../config/firebase/firebasemethods';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
-import { emptyUser } from '../../config/redux/reducers/userSlice';
+import { addUser, emptyUser } from '../../config/redux/reducers/userSlice';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(emptyUser());
-  }, [])
   const emailRef = useRef();
   const passwordRef = useRef();
   const signInUser = async event => {
@@ -26,12 +23,12 @@ const Login = () => {
                 }
               ))
             })
+            navigate('/')
             .catch(err => {
               console.log(err);
             })
         }
         getUserData();
-        navigate('/')
       })
       .catch((error) => {
         const errorMessage = error.message;
