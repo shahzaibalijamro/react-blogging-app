@@ -10,6 +10,7 @@ import { addAllBlogs } from '../../config/redux/reducers/allBlogsSlice';
 const Home = () => {
   const inputSearch = useRef();
   const [allBlogs, setAllBlogs] = useState([]);
+  const userSelector = useSelector(state => state.user.user[0])
   const [searchedBlogs,setSearchedBlogs] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -28,7 +29,9 @@ const Home = () => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         console.log(user);
-        getUserData()
+        if (!userSelector) {
+          getUserData()
+        }
       } else {
         null
       }

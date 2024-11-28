@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { emptyUser } from '../config/redux/reducers/userSlice';
 const Navbar = () => {
     const userSelector = useSelector(state => state.user.user[0])
+    console.log(userSelector);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
