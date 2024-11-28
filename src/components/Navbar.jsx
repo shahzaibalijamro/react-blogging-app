@@ -10,15 +10,14 @@ const Navbar = () => {
     const location = useLocation();
     const currentPage = location.pathname;
     const logOutUser = async () => {
-        await signOutUser()
-        .then(() => {
+        try {
+            await signOutUser()
             console.log("user Signout Successfully");
             dispatch(emptyUser());
             navigate('/login')
-        })
-        .catch((error) => {
+        } catch (error) {
             console.log(error);
-        });
+        }
     }
     return (
         <>

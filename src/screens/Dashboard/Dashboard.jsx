@@ -16,8 +16,6 @@ const Dashboard = () => {
   const userSelector = useSelector(state => state.user.user[0])
   const blogTitle = useRef();
   const blogDescription = useRef();
-  const editBlogRef = useRef();
-  const editDescriptionRef = useRef();
   const dispatch = useDispatch();
   const showSnackbar = () => {
     var snackbar = document.getElementById("snackbar");
@@ -25,29 +23,27 @@ const Dashboard = () => {
     setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
   }
   useEffect(() => {
-    !userSelector ? getData("users", auth.currentUser.uid)
-      .then(arr => {
-        dispatch(addUser(
-          {
-            user: arr
-          }
-        ))
-      })
-      .catch(err => {
-        console.log(err);
-      })
-      : null
-    getData("blogs", auth.currentUser.uid)
-      .then(arr => {
-        setMyBlogs(arr)
-      })
-      .catch(err => {
-        setGotData(true);
-        console.log(err);
-      })
+    if (!userSelector) {
+      try {
+        (async () => {
+          await getData("users", auth.currentUser.uid)
+            .then(arr => {
+              dispatch(addUser(
+                {
+                  user: arr
+                }
+              ))
+            })
+            .catch(err => {
+              console.log(err);
+            })
+        })()
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }, []);
-  const pushDataToFirestore = (event) => {
-    event.preventDefault();
+  const getCurrentTime = () => {
     const current = new Date();
     const currentDate = current.getDate();
     const currentMonth = current.getMonth();
@@ -63,29 +59,32 @@ const Dashboard = () => {
             currentDate === 22 ? currentDate + 'nd' :
               currentDate === 23 ? currentDate + 'rd' :
                 currentDate + 'th');
-
-    const formattedTime = `${months[currentMonth]} ${correctedDate}, ${currentYear}`;
-    sendData(
-      {
-        title: blogTitle.current.value,
-        description: blogDescription.current.value,
-        time: formattedTime,
-        uid: userSelector.uid,
-        pfp: userSelector.pfp,
-        name: userSelector.name,
-        email: userSelector.email
-      }, "blogs"
-    )
-      .then((res) => {
-        console.log(res);
-      })
-    getData("blogs", auth.currentUser.uid)
-      .then(arr => {
-        setMyBlogs(arr)
-      })
-      .catch(err => {
-        alert(err)
-      })
+    return `${months[currentMonth]} ${correctedDate}, ${currentYear}`
+  }
+  const pushDataToFirestore = async (event) => {
+    event.preventDefault();
+    const formattedTime = getCurrentTime()
+    try {
+      await sendData(
+        {
+          title: blogTitle.current.value,
+          description: blogDescription.current.value,
+          time: formattedTime,
+          uid: userSelector.uid,
+          pfp: userSelector.pfp,
+          name: userSelector.name,
+          email: userSelector.email
+        }, "blogs")
+        .then((res) => {
+          console.log(res);
+        });
+      await getData("blogs", auth.currentUser.uid)
+        .then(arr => {
+          setMyBlogs(arr)
+        })
+    } catch (error) {
+      console.log(error);
+    }
     showSnackbar()
     blogTitle.current.value = '';
     blogDescription.current.value = '';
@@ -98,37 +97,22 @@ const Dashboard = () => {
     });
     setSearchedBlogs(filteredArr)
   }
-  const deleteBlog = (i, id) => {
+  const deleteBlog = async (i, id) => {
     myBlogs.length === 1 ? setGotData(true) : null
-    myBlogs.splice(i, 1);
-    setMyBlogs([...myBlogs]);
-    deleteDocument(id, 'blogs')
+    try {
+      await deleteDocument(id, 'blogs')
       .then(res => {
         console.log(res);
+        myBlogs.splice(i, 1);
+        setMyBlogs([...myBlogs]);
       })
-      .catch(err => {
-        console.log(err);
-      })
-  }
+    } catch (error) {
+      console.log(err);
+    }
+  };
   const editBlog = async (event) => {
     event.preventDefault();
-    const current = new Date();
-    const currentDate = current.getDate();
-    const currentMonth = current.getMonth();
-    const currentYear = current.getFullYear();
-    const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-    const correctedDate = (currentDate === 1 ? currentDate + 'st' :
-      currentDate === 2 ? currentDate + 'nd' :
-        currentDate === 3 ? currentDate + 'rd' :
-          currentDate === 21 ? currentDate + 'st' :
-            currentDate === 22 ? currentDate + 'nd' :
-              currentDate === 23 ? currentDate + 'rd' :
-                currentDate + 'th');
-
-    const formattedTime = `Edited at ${months[currentMonth]} ${correctedDate}, ${currentYear}`;
+    const formattedTime = `Edited at ${getCurrentTime()}`;
     const updatedBlogs = [...myBlogs];
     updatedBlogs[myIndex].title = blogTitleToEdit;
     updatedBlogs[myIndex].description = blogDescriptionToEdit;
