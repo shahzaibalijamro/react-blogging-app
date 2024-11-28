@@ -14,21 +14,22 @@ const Login = () => {
     event.preventDefault();
     signInWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
       .then((userCredential) => {
-        async function getUserData() {
-          await getData("users", auth.currentUser.uid)
-            .then(arr => {
-              dispatch(addUser(
-                {
-                  user: arr
-                }
-              ))
-            })
-            navigate('/')
-            .catch(err => {
-              console.log(err);
-            })
-        }
-        getUserData();
+        // async function getUserData() {
+        //   await getData("users", auth.currentUser.uid)
+        //     .then(arr => {
+        //       dispatch(addUser(
+        //         {
+        //           user: arr
+        //         }
+        //       ))
+        //     })
+        //     navigate('/')
+        //     .catch(err => {
+        //       console.log(err);
+        //     })
+        // }
+        // getUserData();
+        navigate('/')
       })
       .catch((error) => {
         const errorMessage = error.message;

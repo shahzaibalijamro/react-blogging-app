@@ -27,8 +27,8 @@ let signUpUser = (obj) => {
                 await addDoc(collection(db, "users"), obj)
                     .then((res) => {
                         console.log("user added to database successfully");
-                        signOutUser()
-                        console.log("user Signout Successfully");
+                        // signOutUser()
+                        // console.log("user Signout Successfully");
                     })
                     .catch((err) => {
                         console.log(err);
