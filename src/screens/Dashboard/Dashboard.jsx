@@ -38,7 +38,12 @@ const Dashboard = () => {
                 }
               ))
             })
+          await getData("blogs", auth.currentUser.uid)
+            .then(arr => {
+              setMyBlogs(arr)
+            })
             .catch(err => {
+              setGotData(true);
               console.log(err);
             })
         })()
@@ -113,11 +118,11 @@ const Dashboard = () => {
     myBlogs.length === 1 ? setGotData(true) : null
     try {
       await deleteDocument(id, 'blogs')
-      .then(res => {
-        console.log(res);
-        myBlogs.splice(i, 1);
-        setMyBlogs([...myBlogs]);
-      })
+        .then(res => {
+          console.log(res);
+          myBlogs.splice(i, 1);
+          setMyBlogs([...myBlogs]);
+        })
     } catch (error) {
       console.log(err);
     }
