@@ -6,14 +6,18 @@ const ProtectedRoute = ({ component }) => {
     const navigate = useNavigate();
     const [userState, setUserState] = useState(false);
     useEffect(() => {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                setUserState(true)
-            } else {
-                setUserState(false)
-                navigate('/login')
-            }
-        });
+        try {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    setUserState(true)
+                } else {
+                    setUserState(false)
+                    navigate('/login')
+                }
+            });
+        } catch (error) {
+            console.log(error);
+        }
     }, [])
     return (
         <>

@@ -5,19 +5,22 @@ import { getData } from '../../config/firebase/firebasemethods';
 const SingleUser = () => {
   const inputSearch = useRef();
   const singleUser = JSON.parse(localStorage.getItem('singleUser'));
-  const[singleUserBlogs,setSingleUserBlogs] = useState([]);
+  const [singleUserBlogs,setSingleUserBlogs] = useState([]);
   const [searchedBlogs,setSearchedBlogs] = useState([]);
   useEffect(()=>{
-    getData("blogs", singleUser.uid)
-    .then(arr => setSingleUserBlogs(arr))
-    .catch(err =>{
-      alert(err)
-    })
+    (async ()=>{
+      try {
+        await getData("blogs", singleUser.uid)
+        .then(arr => setSingleUserBlogs(arr))
+      } catch (error) {
+        console.log(error);
+      }
+    })()
   },[])
   const searchBlogs = () => {
     const searchValue = inputSearch.current.value.toLowerCase();
     const filteredArr = singleUserBlogs.filter(item => {
-        return item.title.toLowerCase().includes(searchValue) ||
+      return item.title.toLowerCase().includes(searchValue) ||
             item.description.toLowerCase().includes(searchValue);
     });
     setSearchedBlogs(filteredArr)

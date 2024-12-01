@@ -22,49 +22,46 @@ const Profile = () => {
             console.log(err);
         })
         : null
-    const showSnackbar = (innerText,time = 3000) => {
+    const showSnackbar = (innerText, time = 3000) => {
         var snackbar = document.getElementById(`snackbar`);
         snackbar.innerHTML = innerText;
         snackbar.className = "show";
         setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, time);
     }
-    const passwordReset = () => {
-        sendPasswordResetEmail(auth, userSelector.email)
-            .then(() => {
-                showSnackbar(`Password reset email has been sent to your registered email address at <br/> ${userSelector.email}!`)
-            })
-            .catch((error) => {
-                alert(errorMessage)
-            });
+    const passwordReset = async () => {
+        try {
+            await sendPasswordResetEmail(auth, userSelector.email)
+            showSnackbar(`Password reset email has been sent to your registered email address at <br/> ${userSelector.email}!`)
+        } catch (error) {
+            console.log(error);
+        }
     }
     const clickIcon = () => {
         const fileInput = document.querySelector('#fileInput');
         fileInput.click();
     }
     const editPfp = async (event) => {
-        showSnackbar(`Updating profile picture!`,1500)
+        showSnackbar(`Updating profile picture!`, 1500)
         const file = event.target.files[0];
-        const url = await uploadImage(file, userSelector.email)
-        const dpRef = doc(db, "users", userSelector.id);
-        await updateDoc(dpRef, {
-            pfp: url
-        })
-            .then(msg => {
-                console.log(msg);
-                dispatch(addUser(
-                    {
-                        user: {
-                            ...userSelector,
-                            pfp: url
-                        }
+        try {
+            const url = await uploadImage(file, userSelector.email)
+            const dpRef = doc(db, "users", userSelector.id);
+            await updateDoc(dpRef, {
+                pfp: url
+            })
+            dispatch(addUser(
+                {
+                    user: {
+                        ...userSelector,
+                        pfp: url
                     }
-                ))
-                showSnackbar(`Profile picture updated!`);
-                getMyBlogs('pfp',url);
-            })
-            .catch(err => {
-                console.log(err);
-            })
+                }
+            ))
+            showSnackbar(`Profile picture updated!`);
+            await getMyBlogs('pfp', url);
+        } catch (error) {
+            console.log(error)
+        }
         event.target.value = ''
     }
     const editName = async () => {
@@ -78,43 +75,41 @@ const Profile = () => {
             await updateDoc(nameRef, {
                 name: editedVal
             })
-                .then(msg => {
-                    console.log(msg);
-                    console.log("Name successfully updated in Firestore!");
-                    dispatch(addUser(
-                        {
-                            user: {
-                                ...userSelector,
-                                name: editedVal
-                            }
-                        }
-                    ))
-                    showSnackbar(`Name updated!`)
-                    getMyBlogs('name',editedVal);
-                })
-                .catch(err => {
-                    console.log(err);
-                })
+            console.log("Name successfully updated in Firestore!");
+            dispatch(addUser(
+                {
+                    user: {
+                        ...userSelector,
+                        name: editedVal
+                    }
+                }
+            ))
+            showSnackbar(`Name updated!`)
+            await getMyBlogs('name', editedVal);
         } catch (err) {
             console.error("Error updating document:", err);
         }
     };
     const currentUserBlogs = [];
-    async function getMyBlogs(key,value) {
+    async function getMyBlogs(key, value) {
         const usersRef = collection(db, "blogs");
         const q = query(usersRef, where("uid", "==", userSelector.uid));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-            currentUserBlogs.push({
-                id: doc.id
-            })
-        });
-        for (let i = 0; i < currentUserBlogs.length; i++) {
-            const editedVal = value;
-            const userNameRef = doc(db, "blogs", currentUserBlogs[i].id);
-            await updateDoc(userNameRef, {
-                [key]: editedVal
+        try {
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                currentUserBlogs.push({
+                    id: doc.id
+                })
             });
+            for (let i = 0; i < currentUserBlogs.length; i++) {
+                const editedVal = value;
+                const userNameRef = doc(db, "blogs", currentUserBlogs[i].id);
+                await updateDoc(userNameRef, {
+                    [key]: editedVal
+                });
+            }
+        } catch (error) {
+            console.log(error);
         }
     }
     return (

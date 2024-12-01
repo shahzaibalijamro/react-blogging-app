@@ -6,14 +6,18 @@ const SignOutRoutes = ({ component }) => {
     const navigate = useNavigate();
     const [userState, setUserState] = useState(false);
     useEffect(() => {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                setUserState(true)
-                navigate('/')
-            } else {
-                setUserState(false)
-            }
-        });
+        try {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    setUserState(true)
+                    navigate('/')
+                } else {
+                    setUserState(false)
+                }
+            });
+        } catch (error) {
+            console.log(error);
+        }
     }, [])
     return (
         <>

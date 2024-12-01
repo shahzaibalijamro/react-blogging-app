@@ -15,20 +15,25 @@ const Register = () => {
   const fileRef = useRef();
   const registerUser = async (event) => {
     event.preventDefault();
-    const url = await uploadImage(fileRef.current.files[0],emailRef.current.value)
-    passwordRef.current.value === repeatPasswordRef.current.value ? signUpUser({
-      email: emailRef.current.value,
-      password: passwordRef.current.value,
-      name: `${firstNameRef.current.value} ${lastNameRef.current.value}`,
-      pfp: url
-    }).then(async res => {
-      console.log(res);
+    if (!passwordRef.current.value === repeatPasswordRef.current.value) {
+      return alert("Passwords do not match!");
+    }
+    try {
+      const url = await uploadImage(fileRef.current.files[0], emailRef.current.value)
+      await signUpUser({
+        email: emailRef.current.value,
+        password: passwordRef.current.value,
+        name: `${firstNameRef.current.value} ${lastNameRef.current.value}`,
+        pfp: url
+      }).then(res => {
+        console.log(res)
+      })
       await signOutUser();
       dispatch(emptyUser());
       navigate('/login')
-    }).catch(err => {
-      console.log(err);
-    }) : alert('Passwords do not match!')
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <div className="min-h-[100vh] h-full mt-[40px] flex justify-center p-5 items-center">
