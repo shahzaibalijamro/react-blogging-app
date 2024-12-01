@@ -7,21 +7,25 @@ import { addUser } from '../../config/redux/reducers/userSlice';
 import { doc, updateDoc } from 'firebase/firestore';
 const Dashboard = () => {
   const [myIndex, setMyIndex] = useState(0);
-  const inputSearch = useRef();
   const [blogTitleToEdit, setBlogTitleToEdit] = useState('')
   const [blogDescriptionToEdit, setBlogDescriptionToEdit] = useState('')
-  const [searchedBlogs, setSearchedBlogs] = useState([]);
   const [gotData, setGotData] = useState(false);
+  const [searchedBlogs, setSearchedBlogs] = useState([]);
   const [myBlogs, setMyBlogs] = useState([]);
+  const inputSearch = useRef();
   const userSelector = useSelector(state => state.user.user[0])
   const blogTitle = useRef();
   const blogDescription = useRef();
   const dispatch = useDispatch();
+
+
   const showSnackbar = () => {
     var snackbar = document.getElementById("snackbar");
     snackbar.className = "show";
     setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
   }
+
+
   useEffect(() => {
     if (!userSelector) {
       try {
@@ -43,6 +47,8 @@ const Dashboard = () => {
       }
     }
   }, []);
+
+
   const getCurrentTime = () => {
     const current = new Date();
     const currentDate = current.getDate();
@@ -61,6 +67,8 @@ const Dashboard = () => {
                 currentDate + 'th');
     return `${months[currentMonth]} ${correctedDate}, ${currentYear}`
   }
+
+
   const pushDataToFirestore = async (event) => {
     event.preventDefault();
     const formattedTime = getCurrentTime()
@@ -89,6 +97,8 @@ const Dashboard = () => {
     blogTitle.current.value = '';
     blogDescription.current.value = '';
   }
+
+
   const searchBlogs = () => {
     const searchValue = inputSearch.current.value.toLowerCase();
     const filteredArr = myBlogs.filter(item => {
@@ -97,6 +107,8 @@ const Dashboard = () => {
     });
     setSearchedBlogs(filteredArr)
   }
+
+
   const deleteBlog = async (i, id) => {
     myBlogs.length === 1 ? setGotData(true) : null
     try {
@@ -110,6 +122,8 @@ const Dashboard = () => {
       console.log(err);
     }
   };
+
+
   const editBlog = async (event) => {
     event.preventDefault();
     const formattedTime = `Edited at ${getCurrentTime()}`;
@@ -134,6 +148,8 @@ const Dashboard = () => {
     }
     document.getElementById("my_modal_2").close();
   };
+
+
   const showModal = (index) => {
     setBlogTitleToEdit(myBlogs[index].title);
     setBlogDescriptionToEdit(myBlogs[index].description);
@@ -141,6 +157,8 @@ const Dashboard = () => {
     setMyIndex(index);
     document.getElementById('my_modal_2').showModal();
   };
+
+
   return (
     <div style={{
       minHeight: '100vh'

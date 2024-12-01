@@ -1,40 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import './login.css'
 import { Link, useNavigate } from 'react-router-dom';
-import { auth, getData, loginUser } from '../../config/firebase/firebasemethods';
+import { auth } from '../../config/firebase/firebasemethods';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useDispatch } from 'react-redux';
-import { addUser, emptyUser } from '../../config/redux/reducers/userSlice';
 const Login = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const emailRef = useRef();
   const passwordRef = useRef();
   const signInUser = async event => {
     event.preventDefault();
-    signInWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
-      .then((userCredential) => {
-        // async function getUserData() {
-        //   await getData("users", auth.currentUser.uid)
-        //     .then(arr => {
-        //       dispatch(addUser(
-        //         {
-        //           user: arr
-        //         }
-        //       ))
-        //     })
-        //     navigate('/')
-        //     .catch(err => {
-        //       console.log(err);
-        //     })
-        // }
-        // getUserData();
-        navigate('/')
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        alert(errorMessage)
-      });
+    try {
+      await signInWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
+      navigate('/')
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <div className="h-[100vh] flex justify-center p-5 items-center">

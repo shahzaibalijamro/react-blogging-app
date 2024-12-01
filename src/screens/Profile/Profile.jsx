@@ -1,7 +1,7 @@
 import React from 'react'
 import Greeting from '../../components/Greeting'
 import './Profile.css'
-import { auth, db, getData, updateDocument, uploadImage } from '../../config/firebase/firebasemethods';
+import { auth, db, getData, uploadImage } from '../../config/firebase/firebasemethods';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux';

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import './style.css'
 import Greeting from '../../components/Greeting'
 import { auth, getAllData, getData } from '../../config/firebase/firebasemethods';
 import { useNavigate } from 'react-router-dom';
@@ -7,14 +6,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { onAuthStateChanged } from 'firebase/auth';
 import { addUser } from '../../config/redux/reducers/userSlice';
 import { addAllBlogs } from '../../config/redux/reducers/allBlogsSlice';
+import './style.css'
 const Home = () => {
-  const inputSearch = useRef();
   const [allBlogs, setAllBlogs] = useState([]);
-  const userSelector = useSelector(state => state.user.user[0])
   const [searchedBlogs,setSearchedBlogs] = useState([]);
+  const blogSelector = useSelector(state => state.allBlogs.blogs)
+  const userSelector = useSelector(state => state.user.user[0])
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const blogSelector = useSelector(state => state.allBlogs.blogs)
+  const inputSearch = useRef();
+
+
   useEffect(() => {
     blogSelector.length > 0 ? setAllBlogs(blogSelector) : getAllData("blogs")
       .then(arr => {
@@ -30,13 +32,15 @@ const Home = () => {
       if (user) {
         console.log(user);
         if (!userSelector) {
-          getUserData()
+          await getUserData()
         }
       } else {
         null
       }
     })
   }, [])
+
+
   async function getUserData() {
     await getData("users", auth.currentUser.uid)
       .then(arr => {
@@ -50,10 +54,14 @@ const Home = () => {
         console.log(err);
       })
   }
+
+
   const goToSinglePage = (index) => {
     localStorage.setItem('singleUser', JSON.stringify(allBlogs[index]));
     navigate('/singleuser')
   }
+
+
   const searchBlogs = () => {
     const searchValue = inputSearch.current.value.toLowerCase();
     const filteredArr = allBlogs.filter(item => {
@@ -62,6 +70,8 @@ const Home = () => {
     });
     setSearchedBlogs(filteredArr)
   }
+
+  
   return (
     <div style={{
       minHeight: '100vh'

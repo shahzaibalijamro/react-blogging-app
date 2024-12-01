@@ -26,7 +26,7 @@ let signUpUser = (obj) => {
                 delete obj.password
                 await addDoc(collection(db, "users"), obj)
                     .then((res) => {
-                        console.log("user added to database successfully");
+                        console.log("user added to database successfully",res);
                         // signOutUser()
                         // console.log("user Signout Successfully");
                     })
