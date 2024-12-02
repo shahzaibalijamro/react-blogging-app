@@ -38,14 +38,6 @@ const Dashboard = () => {
                 }
               ))
             })
-          await getData("blogs", auth.currentUser.uid)
-            .then(arr => {
-              setMyBlogs(arr)
-            })
-            .catch(err => {
-              setGotData(true);
-              console.log(err);
-            })
         })()
       } catch (error) {
         console.log(error);
@@ -53,6 +45,19 @@ const Dashboard = () => {
     }
   }, []);
 
+
+  useEffect(() => {
+    (async () => {
+      await getData("blogs", auth.currentUser.uid)
+        .then(arr => {
+          setMyBlogs(arr)
+        })
+        .catch(err => {
+          setGotData(true);
+          console.log(err);
+        })
+    })()
+  }, [])
 
   const getCurrentTime = () => {
     const current = new Date();
